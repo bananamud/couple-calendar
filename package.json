@@ -1,0 +1,17 @@
+{
+  "name": "couple-calendar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "情侣日历 · 双人假期 / 旅行计划 / 纪念日同步 App（零依赖）",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build:holidays": "node tools/build-holidays.mjs",
+    "build:icons": "node tools/make-icons.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

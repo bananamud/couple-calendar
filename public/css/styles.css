@@ -1,0 +1,1539 @@
+/* ============================ 设计变量 ============================ */
+:root {
+  --bg: #fff6fa;
+  --bg-2: #f3f7ff;
+  --card: #ffffff;
+  --line: #f0e6ee;
+  --ink: #3d3745;
+  --ink-2: #6f6780;
+  --ink-3: #a49cae;
+
+  /* 两个人的主题色 */
+  --u1: #6fa8ff; /* 用户1 · 蓝 */
+  --u2: #ff8fb1; /* 用户2 · 粉 */
+  --brand: linear-gradient(135deg, #7fb2f5 0%, #ffa8c6 100%);
+
+  /* 日期底色 */
+  --work: #fff8e2;
+  --work-line: #f4e6b8;
+  --weekend: #e6f6e0;
+  --weekend-line: #c8e6bd;
+  /* 假期底色：淡蓝＝用户1放假，淡粉＝用户2放假，两人都放＝两者渐变 */
+  --u1-off: #cfe4ff;
+  --u2-off: #ffd9e8;
+
+  --radius: 20px;
+  --radius-sm: 14px;
+  --shadow: 0 10px 30px rgba(120, 90, 130, 0.1);
+  --shadow-soft: 0 4px 14px rgba(120, 90, 130, 0.08);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  /* 关掉手机浏览器的「字体自动放大」，否则两行注释会被撑高、笔画被裁掉 */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+  background-attachment: fixed;
+  overscroll-behavior-y: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: 100dvh;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* ============================ 顶栏 ============================ */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: calc(var(--safe-top) + 12px) 16px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 246, 250, 0.86);
+  backdrop-filter: saturate(1.4) blur(14px);
+  border-bottom: 1px solid rgba(240, 230, 238, 0.7);
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.topbar .spacer {
+  flex: 1;
+}
+
+.sync-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--ink-2);
+  background: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.sync-pill .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink-3);
+}
+
+.sync-pill[data-state="ok"] .dot {
+  background: #56c184;
+}
+.sync-pill[data-state="busy"] .dot {
+  background: #f0b429;
+}
+.sync-pill[data-state="off"] .dot {
+  background: #c9c3d2;
+}
+
+.sync-pill[data-state="locked"] .dot {
+  background: #e5709c;
+}
+
+.link-box {
+  margin: 10px 0 4px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #f2f7ff, #fff1f7);
+  font-size: 13px;
+  font-weight: 700;
+  color: #31609b;
+  word-break: break-all;
+  line-height: 1.7;
+  user-select: all;
+  -webkit-user-select: all;
+}
+
+.row-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.back-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.back-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ============================ 主体 ============================ */
+.view {
+  padding: 12px 14px calc(18px + var(--safe-bottom));
+  overflow-x: hidden;
+  min-width: 0;
+  outline: none;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 4px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-2);
+  letter-spacing: 0.4px;
+}
+
+.muted {
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+.empty {
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 13px;
+  padding: 28px 10px;
+  line-height: 1.7;
+}
+
+/* ============================ 身份切换 ============================ */
+.who {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.who button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 8px;
+  border-radius: var(--radius-sm);
+  background: #fff;
+  box-shadow: var(--shadow-soft);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+  border: 1.5px solid transparent;
+  transition: 0.18s;
+}
+
+.who button[data-me="true"] {
+  color: var(--ink);
+  border-color: currentColor;
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.8);
+}
+
+.swatch.u1 {
+  background: var(--u1);
+}
+.swatch.u2 {
+  background: var(--u2);
+}
+
+/* ============================ 月份切换 ============================ */
+.monthbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 2px 10px;
+}
+
+.monthbar .title {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.monthbar .title small {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-3);
+  letter-spacing: 0;
+}
+
+.monthbar .nav {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: var(--shadow-soft);
+  font-size: 17px;
+  color: var(--ink-2);
+  display: grid;
+  place-items: center;
+}
+
+.monthbar .nav:disabled {
+  opacity: 0.35;
+}
+
+.monthbar .tools {
+  display: flex;
+  gap: 8px;
+}
+
+.monthbar .today {
+  flex: none;
+  white-space: nowrap;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #eaf2ff, #ffe9f2);
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--shadow-soft);
+}
+
+/* ============================ 日历网格 ============================ */
+.calendar {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 10px 6px 12px;
+}
+
+.weekhead,
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.weekhead {
+  margin-bottom: 6px;
+}
+
+.weekhead span {
+  text-align: center;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink-3);
+  padding: 2px 0;
+}
+
+.weekhead span.we {
+  color: #8bbf7f;
+}
+
+.day {
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 1 / 1.2;
+  border-radius: 13px;
+  padding: 3px 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  overflow: hidden;
+  transition: transform 0.12s ease;
+  border: 1px solid transparent;
+}
+
+.day:active {
+  transform: scale(0.95);
+}
+
+.day.is-out {
+  opacity: 0.32;
+}
+
+.day.is-locked {
+  opacity: 0.22;
+}
+
+.day[data-today="true"] {
+  border-color: #ff9ec2;
+  box-shadow: 0 0 0 2px rgba(255, 158, 194, 0.35);
+}
+
+.day .num {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.day[data-has-leave="true"] .num {
+  color: var(--ink);
+}
+
+.day .tag {
+  flex: none; /* 弹性布局里不让它被压扁（压扁会把笔画裁掉） */
+  font-size: 10px;
+  line-height: 1.25;
+  font-weight: 700;
+  padding: 0 3px;
+  border-radius: 6px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+/* 预测版的假期：虚线边框，一眼能看出不是官方安排 */
+.day[data-predicted="true"] {
+  border-color: rgba(120, 100, 140, 0.35);
+  border-style: dashed;
+}
+
+.day[data-has-leave="true"] .tag {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* 两个人都有假：注释换成两行，避免被截断 */
+.day .tag.multi {
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: clip;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 1px 3px;
+  font-size: 9.5px;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.day .tag.multi .tag-line {
+  display: block;
+}
+
+/* 小屏手机再收一点：保证三个字的假期名、以及两行注释都放得下 */
+@media (max-width: 350px) {
+  .day {
+    aspect-ratio: 1 / 1.28;
+  }
+  .day .num {
+    font-size: 15px;
+  }
+  .day .tag {
+    font-size: 9px;
+    padding: 0 2px;
+  }
+  .day .tag.multi {
+    font-size: 8.5px;
+    line-height: 1.1;
+  }
+}
+
+.day .marks {
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  font-size: 10px;
+  line-height: 1;
+  display: flex;
+  gap: 1px;
+}
+
+.day .aniv {
+  position: absolute;
+  bottom: 2px;
+  right: 3px;
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* 有备注的假期：左下角一个小笔标记 */
+.day .note-mark {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  font-size: 10px;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin: 12px 4px 0;
+}
+
+.legend div {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+  max-width: 100%;
+  min-width: 0;
+}
+
+.legend i {
+  width: 14px;
+  height: 14px;
+  border-radius: 5px;
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.stats div {
+  border-radius: var(--radius-sm);
+  padding: 10px 8px;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+  background: #fff;
+}
+
+.stats b {
+  display: block;
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.stats span {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+/* ============================ 年假卡片 ============================ */
+.annual-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.annual {
+  text-align: left;
+  padding: 12px 12px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  box-shadow: var(--shadow-soft);
+  min-width: 0;
+}
+
+.annual:active {
+  transform: scale(0.98);
+}
+
+.annual .who {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+.annual .who .swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.annual .num {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 4px 0 2px;
+  letter-spacing: -0.5px;
+}
+
+.annual .num .unit {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-3);
+  margin-left: 2px;
+}
+
+.annual[data-uid="u1"] .num {
+  color: var(--u1);
+}
+
+.annual[data-uid="u2"] .num {
+  color: var(--u2);
+}
+
+.annual .num.unset {
+  font-size: 17px;
+  color: var(--ink-3);
+  margin: 9px 0 5px;
+}
+
+.annual .sub {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.annual-note {
+  grid-column: 1 / -1;
+  font-size: 11.5px;
+  color: var(--ink-3);
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* ============================ 日期选择器 ============================ */
+
+/* 可折叠的设置模块 */
+.collapse {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.collapse-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 15px 16px;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.collapse-title {
+  flex: none;
+}
+
+.collapse-hint {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-3);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collapse-arrow {
+  flex: none;
+  width: 20px;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 17px;
+  transition: transform 0.22s ease;
+}
+
+.collapse.open .collapse-arrow {
+  transform: rotate(90deg);
+}
+
+.collapse-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.28s ease;
+}
+
+.collapse.open .collapse-body {
+  max-height: 2400px;
+}
+
+.collapse-inner {
+  padding: 0 16px 16px;
+}
+
+.collapse-inner .list-item:first-child {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.picker-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+  padding: 0 8px;
+}
+
+.picker-title {
+  flex: 1;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ink);
+  background: none;
+  padding: 6px 0;
+}
+
+/* 点标题可以选年 / 选月 */
+.picker-title::after {
+  content: " ▾";
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.picker-jump-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+  padding: 0 8px;
+}
+
+.picker-jump-title {
+  flex: 1;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+/* 高度大致对齐 6 行日历，切换面板时弹层不会跳 */
+.picker-jump-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  min-height: 296px;
+  align-content: start;
+  padding: 0 4px;
+}
+
+.picker-jump-item {
+  padding: 14px 0;
+  border-radius: var(--radius-sm);
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.picker-jump-item[data-active="true"] {
+  background: var(--brand);
+  color: #fff;
+  box-shadow: none;
+}
+
+.picker-jump-item:active {
+  transform: scale(0.97);
+}
+
+/* 图标：固定 4 列网格，所有格子一样大；最后一行的空位放自定义输入框 */
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.emoji-grid button {
+  padding: 12px 0;
+  border-radius: 14px;
+  background: #f8f5fa;
+  font-size: 20px;
+  line-height: 1.2;
+  border: 1.5px solid transparent;
+}
+
+.emoji-grid button[data-active="true"] {
+  background: #fff;
+  border-color: #ffc0d8;
+  box-shadow: var(--shadow-soft);
+}
+
+.emoji-custom-input {
+  grid-column: span 2;
+  width: 100%;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1.5px solid var(--line);
+  background: #fffdfe;
+  font-size: 15px;
+  text-align: center;
+  outline: none;
+}
+
+.emoji-custom-input::placeholder {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.emoji-custom-input[data-active="true"] {
+  border-color: #ffc0d8;
+  box-shadow: 0 0 0 3px rgba(255, 182, 209, 0.22);
+}
+
+.picker-nav {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  background: #f7f4fa;
+  color: var(--ink-2);
+  font-size: 15px;
+  display: grid;
+  place-items: center;
+}
+
+.picker-nav:active {
+  background: #efe8f3;
+}
+
+.picker-body .weekhead {
+  margin-bottom: 4px;
+}
+
+.picker-grid {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.picker-grid .day {
+  aspect-ratio: 1 / 0.92;
+  border-radius: 11px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.picker-grid .day.is-locked {
+  background: #faf8fb;
+}
+
+.picker-grid .day[data-picked="true"] {
+  background: var(--brand);
+  box-shadow: none;
+}
+
+.picker-grid .day[data-picked="true"] .num {
+  color: #fff;
+}
+
+/* 反查：设置页里显示日期的按钮 */
+.date-btn {
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: #fffdfe;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.date-btn[data-empty="true"] {
+  color: var(--ink-3);
+}
+
+/* ============================ 纪念日详情 ============================ */
+.hero {
+  border-radius: 26px;
+  padding: 26px 18px 20px;
+  background: var(--brand);
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 14px 34px rgba(255, 150, 190, 0.32);
+}
+
+.hero-emoji {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.hero-title {
+  margin-top: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  opacity: 0.96;
+}
+
+.hero-num {
+  font-size: 84px;
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: 5px;
+  margin-right: -5px; /* 抵消最后一个字后面的字距，让数字保持居中 */
+  margin-top: 4px;
+  text-shadow: 0 3px 12px rgba(120, 70, 110, 0.18);
+}
+
+.hero-num .unit {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin-left: 6px;
+  opacity: 0.9;
+}
+
+.hero-sub {
+  font-size: 13px;
+  opacity: 0.92;
+  margin-top: 2px;
+}
+
+.hero-date {
+  font-size: 12.5px;
+  opacity: 0.86;
+  margin-top: 12px;
+}
+
+.hero-tip {
+  font-size: 11px;
+  opacity: 0.72;
+  margin-top: 6px;
+}
+
+.anniv-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.stat-cell {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-soft);
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.stat-cell b {
+  display: block;
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.stat-cell span {
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+
+.list-item[role="button"] {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.list-item[role="button"]:active {
+  background: #faf7fb;
+}
+
+
+.action-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.action-row .primary-btn {
+  flex: 2;
+  width: auto;
+}
+
+.action-row .danger-btn {
+  flex: 1;
+  white-space: nowrap;
+}
+
+/* ============================ 底部导航 ============================ */
+.tabbar {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 6px 6px calc(6px + var(--safe-bottom));
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--line);
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 0 4px;
+  border-radius: 14px;
+  font-size: 11px;
+  color: var(--ink-3);
+  text-decoration: none;
+  transition: 0.18s;
+}
+
+.tab svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tab.active {
+  color: #e5709c;
+  background: linear-gradient(180deg, #fff0f6, #ffffff);
+}
+
+/* ============================ 旅行卡片 ============================ */
+.primary-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius);
+  background: var(--brand);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow: 0 10px 24px rgba(255, 150, 190, 0.32);
+}
+
+.primary-btn:active {
+  transform: scale(0.985);
+}
+
+.trip-card {
+  width: 100%;
+  display: block;
+  text-align: left;
+  margin-bottom: 12px;
+  padding: 16px 16px 14px;
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid transparent;
+}
+
+.trip-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: var(--brand);
+}
+
+.trip-card:active {
+  transform: scale(0.99);
+}
+
+.trip-card h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.trip-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f7f4fa;
+  color: var(--ink-2);
+}
+
+.chip.blue {
+  background: #eaf2ff;
+  color: #31609b;
+}
+.chip.pink {
+  background: #ffeef5;
+  color: #a8416e;
+}
+.chip.green {
+  background: #eef8e9;
+  color: #4c7c45;
+}
+
+/* ============================ Day 编辑块 ============================ */
+.day-block {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+}
+
+.day-block header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.day-badge {
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--brand);
+  white-space: nowrap;
+}
+
+.day-block .date {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.day-block textarea,
+.plan-card textarea {
+  width: 100%;
+  min-height: 74px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  background: #fffdfe;
+  outline: none;
+}
+
+/* 自增高的文本框：高度跟着内容走，不出现内部滚动条 */
+textarea.autogrow {
+  resize: none;
+  overflow: hidden;
+  min-height: 44px;
+}
+
+/* 总体计划：独立一块，放在 Day 1 之前 */
+.plan-card {
+  border: 1px solid #f2e2ee;
+}
+
+.plan-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.plan-badge {
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--brand);
+  white-space: nowrap;
+}
+
+.day-block textarea:focus,
+.plan-card textarea:focus,
+.field input:focus,
+.field textarea:focus,
+.field select:focus,
+.note-input:focus {
+  border-color: #ffb6d1;
+  box-shadow: 0 0 0 3px rgba(255, 182, 209, 0.22);
+}
+
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--ink-3);
+  background: #f8f5fa;
+  font-size: 15px;
+  flex: none;
+}
+
+.icon-btn.danger {
+  color: #d1596f;
+}
+
+.add-day {
+  width: 100%;
+  padding: 16px;
+  border-radius: var(--radius);
+  border: 1.6px dashed #e3c9d8;
+  background: rgba(255, 255, 255, 0.6);
+  color: #c07fa1;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.add-day:active {
+  background: #fff0f6;
+}
+
+.add-day .plus {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* ============================ 表单 ============================ */
+.field {
+  margin-bottom: 14px;
+}
+
+.field label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-2);
+  margin-bottom: 6px;
+}
+
+.field input,
+.field textarea,
+.field select,
+.note-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: #fffdfe;
+  outline: none;
+  font-size: 15px;
+}
+
+.note-input {
+  margin-top: 10px;
+  padding: 11px 12px;
+  font-size: 14px;
+}
+
+.field .row {
+  display: flex;
+  gap: 8px;
+}
+
+.field .hint {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin-top: 6px;
+}
+
+.seg {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.seg button {
+  flex: 1;
+  min-width: 68px;
+  padding: 10px 8px;
+  border-radius: var(--radius-sm);
+  background: #f8f5fa;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+  border: 1.5px solid transparent;
+}
+
+.seg button[data-active="true"] {
+  background: #fff;
+  border-color: #ffc0d8;
+  color: #c34e83;
+  box-shadow: var(--shadow-soft);
+}
+
+/* ============================ 列表项 ============================ */
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 6px;
+  border-bottom: 1px solid var(--line);
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item .emoji {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  background: linear-gradient(135deg, #eef4ff, #ffeef6);
+  flex: none;
+}
+
+.list-item .grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-item .t {
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.list-item .s {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 3px;
+}
+
+/* ============================ 底部弹层 ============================ */
+.sheet-root {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+
+/* 每一层弹层各自独立，可以叠起来（弹层里再开日期选择器） */
+.sheet-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sheet-layer.show {
+  pointer-events: auto;
+}
+
+.sheet-layer .backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(50, 40, 55, 0.36);
+  opacity: 0;
+  transition: opacity 0.24s;
+}
+
+.sheet-layer.show .backdrop {
+  opacity: 1;
+}
+
+.sheet-layer .sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 88dvh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 26px 26px 0 0;
+  padding: 8px 16px calc(20px + var(--safe-bottom));
+  transform: translateY(102%);
+  transition: transform 0.28s cubic-bezier(0.22, 0.9, 0.28, 1);
+  max-width: 560px;
+  margin: 0 auto;
+  box-shadow: 0 -12px 40px rgba(80, 60, 90, 0.18);
+}
+
+.sheet-layer.show .sheet {
+  transform: translateY(0);
+}
+
+/* 被上层压住的弹层：淡出并稍微缩小，返回时原样恢复 */
+.sheet-layer.behind .backdrop {
+  opacity: 0;
+}
+
+.sheet-layer.behind .sheet {
+  transform: translateY(8px) scale(0.96);
+  opacity: 0.55;
+  transform-origin: bottom center;
+}
+
+.sheet .grab {
+  width: 42px;
+  height: 5px;
+  border-radius: 999px;
+  background: #ecdfe8;
+  margin: 6px auto 12px;
+}
+
+.sheet h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.sheet .sub {
+  font-size: 12.5px;
+  color: var(--ink-3);
+  margin-bottom: 14px;
+}
+
+.sheet-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.ghost-btn {
+  flex: 1;
+  padding: 13px;
+  border-radius: var(--radius-sm);
+  background: #f7f4fa;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink-2);
+  text-align: center;
+}
+
+.danger-btn {
+  flex: 1;
+  padding: 13px;
+  border-radius: var(--radius-sm);
+  background: #fff0f2;
+  color: #cf5468;
+  font-weight: 700;
+  font-size: 14px;
+  text-align: center;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stepper button {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #f8f5fa;
+  font-size: 18px;
+  color: var(--ink-2);
+  display: grid;
+  place-items: center;
+}
+
+.stepper .val {
+  min-width: 54px;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* ============================ 提示 ============================ */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(84px + var(--safe-bottom));
+  transform: translate(-50%, 20px);
+  background: rgba(61, 55, 69, 0.94);
+  color: #fff;
+  font-size: 13.5px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.24s;
+  z-index: 90;
+  max-width: 86vw;
+  text-align: center;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+/* 纪念日「排序模式」 */
+.sort-toggle {
+  flex: none;
+  width: 96px;
+  padding: 14px 0;
+}
+
+.sort-tip {
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #eef4ff, #ffeef6);
+  font-size: 12.5px;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+
+.drag-handle {
+  flex: none;
+  width: 30px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #f6f2f8;
+  /* 关键：手柄自己吃掉手势，拖动时不会变成滚动页面 */
+  touch-action: none;
+  cursor: grab;
+}
+
+.drag-handle svg {
+  fill: var(--ink-3);
+}
+
+.list-item.dragging {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(120, 90, 130, 0.22);
+  transform: scale(1.02);
+  position: relative;
+  z-index: 5;
+}
+
+.anniv-list.dragging-active .list-item:not(.dragging) {
+  opacity: 0.65;
+}

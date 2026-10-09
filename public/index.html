@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no"
+    />
+    <title>情侣日历</title>
+    <meta name="description" content="两个人的假期、旅行与纪念日，一台手机就能同步。" />
+    <meta name="theme-color" content="#fff6fa" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="情侣日历" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./icons/icon-180.png" />
+    <link rel="icon" href="./icons/icon-192.png" />
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar" id="topbar"></header>
+      <main class="view" id="view" tabindex="-1"></main>
+      <nav class="tabbar" id="tabbar">
+        <a class="tab" data-route="calendar" href="#/calendar">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="3" />
+            <path d="M3 10h18M8 3v4M16 3v4" />
+          </svg>
+          <span>日历</span>
+        </a>
+        <a class="tab" data-route="trips" href="#/trips">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 13.5 20.5 4.5 15 20l-3.2-5.6L3 13.5Z" />
+          </svg>
+          <span>旅行</span>
+        </a>
+        <a class="tab" data-route="anniv" href="#/anniv">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M12 20s-7-4.4-7-9.3A4 4 0 0 1 12 8a4 4 0 0 1 7 2.7C19 15.6 12 20 12 20Z"
+            />
+          </svg>
+          <span>纪念日</span>
+        </a>
+        <a class="tab" data-route="me" href="#/me">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+            />
+          </svg>
+          <span>设置</span>
+        </a>
+      </nav>
+    </div>
+    <div class="sheet-root" id="sheet-root"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script>
+      /* 这个内联脚本必须是不依赖模块的：它负责在「脚本根本加载不了」时也能给出人话提示 */
+      (function () {
+        function showNotice(title, lines, tip) {
+          var view = document.getElementById('view');
+          var bar = document.getElementById('topbar');
+          if (!view) return;
+          if (bar && !bar.innerHTML.trim()) bar.innerHTML = '<h1>❤️ 情侣日历</h1>';
+          if (view.dataset.notice === '1') return;
+          view.dataset.notice = '1';
+          view.innerHTML = '';
+          var box = document.createElement('div');
+          box.className = 'card';
+          box.style.marginTop = '18px';
+          var t = document.createElement('div');
+          t.style.cssText = 'font-size:17px;font-weight:800;margin-bottom:10px';
+          t.textContent = title;
+          box.appendChild(t);
+          lines.forEach(function (line) {
+            var p = document.createElement('div');
+            p.style.cssText = 'font-size:13.5px;line-height:1.9;color:var(--ink-2)';
+            p.textContent = line;
+            box.appendChild(p);
+          });
+          if (tip) {
+            var code = document.createElement('div');
+            code.style.cssText =
+              'margin-top:12px;padding:12px;border-radius:14px;background:#fff6fa;' +
+              'font-size:14px;font-weight:700;color:#c34e83;word-break:break-all';
+            code.textContent = tip;
+            box.appendChild(code);
+          }
+          view.appendChild(box);
+        }
+
+        if (location.protocol === 'file:') {
+          window.__ccBlocked = true;
+          showNotice(
+            '要先启动服务，不能直接双击 index.html',
+            [
+              '你现在打开的是电脑磁盘上的网页文件，浏览器出于安全限制不允许这种方式加载 App，所以页面是空的。',
+              '正确做法：① 双击项目里的「启动情侣日历.bat」；② 等出现「情侣日历已启动」后，用浏览器打开下面这个地址。',
+              '手机则连接同一个 Wi-Fi，打开终端里显示的那条 192.168.x.x 地址。',
+            ],
+            'http://localhost:5178'
+          );
+          return;
+        }
+
+        window.addEventListener('error', function (event) {
+          if (window.__ccBlocked) return;
+          var view = document.getElementById('view');
+          if (!view || view.children.length) return;
+          showNotice('页面加载失败', ['可能是服务没有启动，或者网络中断。', String((event && event.message) || '')], '');
+        });
+
+        setTimeout(function () {
+          if (window.__ccBlocked) return;
+          var view = document.getElementById('view');
+          if (!view || view.children.length) return;
+          showNotice(
+            '没有连上日历服务',
+            ['请确认电脑上的服务还开着（那个黑色窗口不要关），然后刷新本页。'],
+            location.origin
+          );
+        }, 6000);
+      })();
+    </script>
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>

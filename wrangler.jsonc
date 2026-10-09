@@ -1,0 +1,32 @@
+{
+  // Cloudflare Workers 部署配置（本地 Node 版不需要这个文件）
+  // 部署：见 README「部署到云端」
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "couple-calendar",
+  "main": "worker/index.js",
+  "compatibility_date": "2025-09-01",
+  "observability": { "enabled": true },
+
+  // 前端静态文件（public/ 目录），Worker 里通过 env.ASSETS 访问
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+
+  // 数据存这里（SQLite）。首次部署时 Cloudflare 会引导你创建一个，把 id 填到下面
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "couple-calendar",
+      "database_id": "在这里填 Cloudflare 给你的 database_id"
+    }
+  ],
+
+  // 每天 03:00(UTC) 检查一次节假日数据
+  "triggers": {
+    "crons": ["0 3 * * *"]
+  }
+
+  // 访问密钥用面板的 Settings → Variables and Secrets 添加（名字 ACCESS_KEY，类型 Secret），
+  // 不要写在这个文件里，否则会被提交到 GitHub。
+}

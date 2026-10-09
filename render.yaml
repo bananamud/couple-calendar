@@ -1,0 +1,19 @@
+# Render.com 一键部署（把仓库连上去后选 Blueprint 即可）
+# 免费套餐不支持持久磁盘，所以这里用 starter；数据目录挂载在 /data
+services:
+  - type: web
+    name: couple-calendar
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATA_DIR
+        value: /data
+      # 访问密钥：部署时自己填一个别人猜不到的字符串
+      # 之后两台手机都用  https://你的域名/?k=这个密钥  打开
+      - key: ACCESS_KEY
+        sync: false
+    disk:
+      name: calendar-data
+      mountPath: /data
+      sizeGB: 1
